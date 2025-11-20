@@ -23,14 +23,37 @@
     </div>
 
     <div class="footer">
+      <button id="convert-all-btn" class="secondary-btn">Convert All</button>
       <button id="download-all-btn">Download All</button>
     </div>
   </div>
 
+  <!-- Lightbox -->
   <div id="lightbox" class="lightbox">
     <span class="lightbox-close">&times;</span>
     <img class="lightbox-content" id="lightbox-img">
     <video class="lightbox-content" id="lightbox-video" controls style="display:none;"></video>
+  </div>
+
+  <!-- Conversion Modal -->
+  <div id="conversion-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Select Format</h3>
+        <span class="modal-close">&times;</span>
+      </div>
+      <div class="modal-body">
+        <div class="format-grid">
+          <button class="format-btn" data-format="image/jpeg" data-ext="jpg">jpg</button>
+          <button class="format-btn" data-format="image/png" data-ext="png">png</button>
+          <button class="format-btn" data-format="image/webp" data-ext="webp">webp</button>
+          <!-- Placeholders for future formats -->
+          <button class="format-btn disabled" title="Not supported yet">gif</button>
+          <button class="format-btn disabled" title="Not supported yet">bmp</button>
+          <button class="format-btn disabled" title="Not supported yet">tiff</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script src="libs/jszip.min.js"></script>

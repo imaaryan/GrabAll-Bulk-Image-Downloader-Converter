@@ -179,15 +179,17 @@ body {
 /* Footer */
 .footer {
   margin-top: auto;
+  display: flex;
+  gap: 10px;
 }
 
 #download-all-btn {
-  width: 100%;
+  flex: 2;
   background-color: var(--primary);
   color: var(--primary-foreground);
   border: none;
   padding: 12px;
-  border-radius: 8px; /* Matches card radius roughly */
+  border-radius: 8px;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
@@ -205,15 +207,153 @@ body {
   box-shadow: none;
 }
 
-/* Empty State */
-.empty-state {
-  text-align: center;
-  color: var(--muted-foreground);
-  padding: 40px 0;
+.secondary-btn {
+  flex: 1;
+  background-color: var(--secondary);
+  color: var(--secondary-foreground);
+  border: 1px solid var(--border);
+  padding: 12px;
+  border-radius: 8px;
   font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
 }
 
-/* Lightbox */
+.secondary-btn:hover {
+  background-color: #e4e4e7;
+}
+
+/* Action Buttons Container */
+.action-buttons {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  display: flex;
+  gap: 6px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.asset-card:hover .action-buttons {
+  opacity: 1;
+}
+
+.icon-btn {
+  background-color: var(--primary);
+  border: none;
+  color: var(--primary-foreground);
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.1s;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.icon-btn:hover {
+  background-color: #ea580c;
+  transform: scale(1.05);
+}
+
+.icon-btn svg {
+  width: 14px;
+  height: 14px;
+  stroke: currentColor;
+  stroke-width: 2.5;
+  fill: none;
+}
+
+.convert-btn {
+  background-color: white;
+  color: var(--foreground);
+  border: 1px solid var(--border);
+}
+
+.convert-btn:hover {
+  background-color: #f4f4f5;
+}
+
+/* Modal Styles */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 2000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.modal.visible {
+  opacity: 1;
+}
+
+.modal-content {
+  background-color: var(--background);
+  padding: 20px;
+  border-radius: 12px;
+  width: 320px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.modal-close {
+  cursor: pointer;
+  font-size: 20px;
+  color: var(--muted-foreground);
+}
+
+.format-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.format-btn {
+  background-color: var(--background);
+  border: 1px solid var(--border);
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.format-btn:hover:not(.disabled) {
+  border-color: var(--primary);
+  color: var(--primary);
+  background-color: #fff7ed; /* Light orange tint */
+}
+
+.format-btn.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: var(--muted);
+}
+
+/* Lightbox (existing) */
 .lightbox {
   display: none;
   position: fixed;
@@ -261,3 +401,4 @@ body {
 .lightbox-close:hover {
   background: rgba(255,255,255,0.2);
 }
+
