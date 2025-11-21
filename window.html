@@ -8,11 +8,49 @@
 </head>
 <body>
   <div class="wrapper">
+    <div class="toolbar">
+      <div class="toolbar-left">
+        <label class="checkbox-container">
+          <input type="checkbox" id="select-all-checkbox">
+          <span class="checkmark"></span>
+        </label>
+        <span id="selection-count">0 selected</span>
+      </div>
+      <div class="toolbar-right">
+        <select id="filter-type" class="toolbar-select">
+          <option value="all">All Types</option>
+          <option value="jpg">JPG</option>
+          <option value="png">PNG</option>
+          <option value="webp">WebP</option>
+          <option value="svg">SVG</option>
+          <option value="gif">GIF</option>
+        </select>
+        <select id="sort-order" class="toolbar-select">
+          <option value="default">Default</option>
+          <option value="size-desc">Size (Big → Small)</option>
+          <option value="size-asc">Size (Small → Big)</option>
+        </select>
+      </div>
+    </div>
+
     <div class="content-area">
       <div id="image-list" class="asset-grid"></div>
     </div>
 
+    <div id="batch-options" class="batch-options" style="display:none;">
+      <div class="batch-row">
+        <input type="text" id="filename-prefix" placeholder="Filename prefix (e.g. vacation)" class="batch-input">
+      </div>
+      <div class="batch-row">
+        <label><input type="checkbox" id="resize-check"> Resize to width:</label>
+        <input type="number" id="resize-width" placeholder="px" class="batch-input-small" disabled>
+      </div>
+    </div>
+
     <div class="footer">
+      <button id="batch-toggle-btn" class="icon-btn-large" title="Batch Options">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+      </button>
       <button id="convert-all-btn" class="secondary-btn">Convert All</button>
       <button id="download-all-btn">Download All</button>
     </div>
