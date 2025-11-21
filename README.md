@@ -1,39 +1,36 @@
-# Asset Downloader Chrome Extension
+# Asset Downloader & Converter
 
-A modern, lightweight Chrome extension to extract and download images and videos from any webpage. Built with a clean, user-friendly interface inspired by modern design principles.
+A powerful and lightweight Chrome Extension to extract, download, and convert images from any webpage.
 
 ## Features
 
-- **Asset Extraction**: Automatically detects images and videos on the active tab.
-- **Categorized View**: Separate tabs for Images and Videos.
-- **Modern UI**: Clean, "Shadcn-like" interface with Light Mode and Orange accents.
-- **Image Conversion**: Convert images to JPG, PNG, or WEBP formats before downloading.
-- **Lightbox Preview**: Click any asset to view it in a full-size modal.
-- **Batch Download**: Download all assets (original or converted) as a ZIP file.
-- **Single Download**: Download individual assets with a single click.
+*   **Bulk Image Extraction**: Automatically detects and lists all images on the current webpage.
+*   **Smart Grid View**: Preview images in a clean, responsive grid layout.
+*   **One-Click Download**: Download individual images instantly.
+*   **Bulk Download**: Download all images at once as a ZIP file.
+*   **Image Conversion**: Convert images to **JPG**, **PNG**, or **WebP** formats directly in the browser.
+*   **Privacy Focused**: All processing happens locally on your device. No data is sent to external servers.
 
 ## Installation
 
 1.  Clone or download this repository.
-2.  Open Chrome and navigate to `chrome://extensions`.
-3.  Enable **Developer mode** in the top right corner.
+2.  Open Chrome and navigate to `chrome://extensions/`.
+3.  Enable **Developer mode** (toggle in the top right corner).
 4.  Click **Load unpacked**.
-5.  Select the project directory.
+5.  Select the directory where you downloaded this project.
 
 ## Usage
 
-1.  Navigate to a website containing images or videos.
-2.  Click the **Asset Downloader** icon in your Chrome toolbar.
-3.  Browse found assets in the **Images** or **Video** tabs.
-4.  **Download**: Click the download icon on an asset, or "Download All" for the entire list.
-5.  **Convert**: Click the convert icon (arrows) on an image to select a format (JPG, PNG, WEBP).
-6.  **Convert All**: Click "Convert All" to convert and download all images in the current tab as a ZIP.
+1.  Navigate to any website with images.
+2.  Click the **Asset Downloader** icon in your browser toolbar.
+3.  **To Download**: Hover over an image and click the download icon, or click "Download All" to get everything.
+4.  **To Convert**: Hover over an image, click the convert icon, select your desired format, and the converted image will download automatically.
 
 ## Technologies
 
-- HTML, CSS, JavaScript (Vanilla)
-- [JSZip](https://stuk.github.io/jszip/) for client-side zipping.
-- Chrome Extensions API (Manifest V3).
+*   **Frontend**: HTML, CSS (Vanilla), JavaScript
+*   **Libraries**: JSZip (for bulk downloads)
+*   **Platform**: Chrome Extensions API (Manifest V3)
 
 ## License
 

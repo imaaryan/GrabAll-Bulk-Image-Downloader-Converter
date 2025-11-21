@@ -30,6 +30,23 @@ if (!window.hasAssetDownloaderListener) {
       });
 
       sendResponse({ assets: uniqueAssets });
+    } else if (request.action === 'FETCH_AS_DATA_URL') {
+      fetch(request.url)
+        .then(response => response.blob())
+        .then(blob => {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            sendResponse({ success: true, dataUrl: reader.result });
+          };
+          reader.onerror = () => {
+            sendResponse({ success: false, error: 'Failed to read blob' });
+          };
+          reader.readAsDataURL(blob);
+        })
+        .catch(error => {
+          sendResponse({ success: false, error: error.message });
+        });
+      return true; // Keep channel open
     }
   });
 }

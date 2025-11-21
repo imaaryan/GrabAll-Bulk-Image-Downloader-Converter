@@ -40,36 +40,7 @@ body {
   box-sizing: border-box;
 }
 
-/* Tabs - Segmented Control Style */
-.tabs {
-  display: flex;
-  background-color: var(--muted);
-  padding: 4px;
-  border-radius: var(--radius);
-  margin-bottom: 16px;
-  position: relative;
-}
 
-.tab-btn {
-  flex: 1;
-  background: transparent;
-  border: none;
-  color: var(--muted-foreground);
-  padding: 6px 12px;
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  border-radius: calc(var(--radius) - 2px);
-  transition: all 0.2s ease;
-  z-index: 1;
-}
-
-.tab-btn.active {
-  background-color: var(--background);
-  color: var(--primary); /* Orange text for active tab */
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  font-weight: 600;
-}
 
 /* Content Area */
 .content-area {
@@ -93,13 +64,7 @@ body {
   border: 2px solid var(--background); /* Padding effect */
 }
 
-.tab-content {
-  display: none;
-}
 
-.tab-content.active {
-  display: block;
-}
 
 .asset-grid {
   display: grid;
@@ -401,4 +366,5 @@ body {
 .lightbox-close:hover {
   background: rgba(255,255,255,0.2);
 }
+
 

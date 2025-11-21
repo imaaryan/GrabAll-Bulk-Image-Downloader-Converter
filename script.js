@@ -1,39 +1,17 @@
 document.addEventListener('DOMContentLoaded', async () => {
   // State
-  let currentCategory = 'images'; // 'images' or 'videos'
-  let allAssets = [];
+  let allImages = [];
 
-  // Tab Switching Logic
-  const tabs = document.querySelectorAll('.tab-btn');
-  const contents = document.querySelectorAll('.tab-content');
   const downloadAllBtn = document.getElementById('download-all-btn');
   const convertAllBtn = document.getElementById('convert-all-btn');
+  const imageList = document.getElementById('image-list');
 
-  function updateDownloadButton() {
-    const count = allAssets.filter(a => a.type === (currentCategory === 'images' ? 'image' : 'video')).length;
-    const text = currentCategory === 'images' ? 'Images' : 'Videos';
-    downloadAllBtn.innerText = `Download All ${text} (${count})`;
+  function updateButtons() {
+    const count = allImages.length;
+    downloadAllBtn.innerText = `Download All Images (${count})`;
     downloadAllBtn.disabled = count === 0;
     convertAllBtn.disabled = count === 0;
   }
-
-  tabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-      // Remove active class from all
-      tabs.forEach(t => t.classList.remove('active'));
-      contents.forEach(c => c.classList.remove('active'));
-
-      // Add active class to clicked tab and corresponding content
-      tab.classList.add('active');
-      const tabName = tab.getAttribute('data-tab');
-      currentCategory = tabName;
-      
-      const targetId = tabName === 'images' ? 'images-view' : 'videos-view';
-      document.getElementById(targetId).classList.add('active');
-
-      updateDownloadButton();
-    });
-  });
 
   // Get current tab
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
@@ -62,57 +40,30 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     if (response && response.assets) {
-      renderAssets(response.assets);
+      // Filter only images
+      const images = response.assets.filter(a => a.type === 'image');
+      renderAssets(images);
     } else {
-      document.querySelector('.content-area').innerHTML = `<div class="empty-state">No assets found.</div>`;
+      document.querySelector('.content-area').innerHTML = `<div class="empty-state">No images found.</div>`;
     }
   });
 
-  const imageList = document.getElementById('image-list');
-  const videoList = document.getElementById('video-list');
-
-  function renderAssets(assets) {
-    allAssets = assets;
-    const images = assets.filter(a => a.type === 'image');
-    const videos = assets.filter(a => a.type === 'video');
-
-    renderCategory(images, imageList, 'image');
-    renderCategory(videos, videoList, 'video');
+  function renderAssets(images) {
+    allImages = images;
+    imageList.innerHTML = ''; 
     
-    // Update tab counts
-    document.querySelector('[data-tab="images"]').textContent = `Images (${images.length})`;
-    document.querySelector('[data-tab="videos"]').textContent = `Video (${videos.length})`;
-
-    updateDownloadButton();
-  }
-
-  function renderCategory(items, container, type) {
-    container.innerHTML = ''; // Clear previous content
-    
-    if (items.length === 0) {
-      container.innerHTML = `<div class="empty-state" style="grid-column: 1 / -1;">No ${type}s found.</div>`;
+    if (images.length === 0) {
+      imageList.innerHTML = `<div class="empty-state" style="grid-column: 1 / -1;">No images found.</div>`;
+      updateButtons();
       return;
     }
 
-    items.forEach(item => {
+    images.forEach(item => {
       const card = document.createElement('div');
       card.className = 'asset-card';
 
-      let preview;
-      if (type === 'image') {
-        preview = document.createElement('img');
-        preview.src = item.src;
-      } else {
-        preview = document.createElement('video');
-        preview.src = item.src;
-        preview.controls = false; // Just a preview
-        preview.muted = true;
-        preview.addEventListener('mouseenter', () => preview.play().catch(() => {}));
-        preview.addEventListener('mouseleave', () => {
-          preview.pause();
-          preview.currentTime = 0;
-        });
-      }
+      const preview = document.createElement('img');
+      preview.src = item.src;
       preview.className = 'asset-preview';
 
       const overlay = document.createElement('div');
@@ -132,7 +83,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       `;
       convertBtn.onclick = (e) => {
         e.stopPropagation();
-        openConversionModal(item.src, type);
+        openConversionModal(item.src);
       };
 
       // Download Button
@@ -148,7 +99,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       `;
       downloadBtn.onclick = (e) => {
         e.stopPropagation();
-        downloadSingle(item.src);
+        chrome.downloads.download({ url: item.src });
       };
 
       overlay.appendChild(convertBtn);
@@ -157,19 +108,21 @@ document.addEventListener('DOMContentLoaded', async () => {
       card.appendChild(overlay);
       
       // Lightbox click handler
-      card.onclick = () => openLightbox(item.src, type);
+      card.onclick = () => openLightbox(item.src);
       
-      container.appendChild(card);
+      imageList.appendChild(card);
     });
+
+    updateButtons();
   }
 
-  // --- Conversion Logic ---
+  // --- Conversion Logic (Canvas based) ---
   const conversionModal = document.getElementById('conversion-modal');
   const modalClose = document.querySelector('.modal-close');
-  let conversionTarget = null; // { src, type } or 'all'
+  let conversionTarget = null; // src or 'all'
 
-  function openConversionModal(src, type) {
-    conversionTarget = { src, type };
+  function openConversionModal(src) {
+    conversionTarget = src || 'all';
     conversionModal.style.display = 'flex';
     setTimeout(() => conversionModal.classList.add('visible'), 10);
   }
@@ -187,7 +140,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (e.target === conversionModal) closeConversionModal();
   };
 
-  // Format Selection
   document.querySelectorAll('.format-btn').forEach(btn => {
     btn.addEventListener('click', async () => {
       if (btn.classList.contains('disabled')) return;
@@ -199,16 +151,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       if (conversionTarget === 'all') {
         await convertAndDownloadAll(format, ext);
-      } else if (conversionTarget) {
-        await convertAndDownloadSingle(conversionTarget.src, format, ext);
+      } else {
+        await convertAndDownloadSingle(conversionTarget, format, ext);
       }
     });
   });
 
   convertAllBtn.addEventListener('click', () => {
-    conversionTarget = 'all';
-    conversionModal.style.display = 'flex';
-    setTimeout(() => conversionModal.classList.add('visible'), 10);
+    openConversionModal(null);
   });
 
   async function convertImage(url, format) {
@@ -226,7 +176,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           else reject(new Error("Conversion failed"));
         }, format, 0.9);
       };
-      img.onerror = reject;
+      img.onerror = () => reject(new Error("Failed to load image"));
       img.src = url;
     });
   }
@@ -242,22 +192,21 @@ document.addEventListener('DOMContentLoaded', async () => {
       }, () => URL.revokeObjectURL(blobUrl));
     } catch (e) {
       console.error("Conversion error:", e);
-      alert("Could not convert image. It might be protected or unsupported.");
+      alert("Could not convert image. It might be protected.");
     }
   }
 
   async function convertAndDownloadAll(format, ext) {
-    const assetsToConvert = allAssets.filter(a => a.type === 'image'); // Only images for now
-    if (assetsToConvert.length === 0) return;
+    if (allImages.length === 0) return;
 
     const zip = new JSZip();
-    const folder = zip.folder("converted_assets");
+    const folder = zip.folder("converted_images");
     
     const originalText = convertAllBtn.innerText;
     convertAllBtn.innerText = "Converting...";
     convertAllBtn.disabled = true;
 
-    const promises = assetsToConvert.map(async (asset, index) => {
+    const promises = allImages.map(async (asset, index) => {
       try {
         const blob = await convertImage(asset.src, format);
         folder.file(`image_${index + 1}.${ext}`, blob);
@@ -282,29 +231,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  // --- End Conversion Logic ---
-
-  // Lightbox Logic
+  // --- Lightbox Logic ---
   const lightbox = document.getElementById('lightbox');
   const lightboxImg = document.getElementById('lightbox-img');
-  const lightboxVideo = document.getElementById('lightbox-video');
   const closeBtn = document.querySelector('.lightbox-close');
 
-  function openLightbox(src, type) {
+  function openLightbox(src) {
     lightbox.style.display = 'flex';
-    // Trigger reflow for transition
     setTimeout(() => lightbox.classList.add('visible'), 10);
-
-    if (type === 'image') {
-      lightboxImg.src = src;
-      lightboxImg.style.display = 'block';
-      lightboxVideo.style.display = 'none';
-      lightboxVideo.pause();
-    } else {
-      lightboxVideo.src = src;
-      lightboxVideo.style.display = 'block';
-      lightboxImg.style.display = 'none';
-    }
+    lightboxImg.src = src;
   }
 
   function closeLightbox() {
@@ -312,55 +247,38 @@ document.addEventListener('DOMContentLoaded', async () => {
     setTimeout(() => {
       lightbox.style.display = 'none';
       lightboxImg.src = '';
-      lightboxVideo.src = '';
-      lightboxVideo.pause();
     }, 300);
   }
 
   closeBtn.onclick = closeLightbox;
   lightbox.onclick = (e) => {
-    if (e.target === lightbox) {
-      closeLightbox();
-    }
+    if (e.target === lightbox) closeLightbox();
   };
 
-
-  function downloadSingle(url) {
-    chrome.downloads.download({
-      url: url
-    });
-  }
-
   downloadAllBtn.addEventListener('click', async () => {
-    // Filter assets based on current category
-    const assetsToDownload = allAssets.filter(a => a.type === (currentCategory === 'images' ? 'image' : 'video'));
-
-    if (assetsToDownload.length === 0) return;
+    if (allImages.length === 0) return;
 
     const zip = new JSZip();
-    const folder = zip.folder(currentCategory);
+    const folder = zip.folder("images");
     
     const originalText = downloadAllBtn.innerText;
     downloadAllBtn.innerText = "Zipping...";
     downloadAllBtn.disabled = true;
 
-    // Fetch assets
-    const promises = assetsToDownload.map(async (asset, index) => {
+    const promises = allImages.map(async (asset, index) => {
       try {
         const response = await fetch(asset.src);
         const blob = await response.blob();
         
         // Guess extension
-        let ext = asset.type === 'image' ? 'jpg' : 'mp4';
+        let ext = 'jpg';
         const mime = blob.type;
         if (mime.includes('png')) ext = 'png';
-        else if (mime.includes('jpeg')) ext = 'jpg';
         else if (mime.includes('gif')) ext = 'gif';
         else if (mime.includes('svg')) ext = 'svg';
         else if (mime.includes('webp')) ext = 'webp';
         
-        const filename = `${currentCategory}_${index + 1}.${ext}`;
-        folder.file(filename, blob);
+        folder.file(`image_${index + 1}.${ext}`, blob);
       } catch (e) {
         console.error("Failed to fetch asset:", asset.src, e);
       }
@@ -370,10 +288,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     zip.generateAsync({ type: "blob" }).then(function(content) {
       const url = URL.createObjectURL(content);
-      
       chrome.downloads.download({
         url: url,
-        filename: `${currentCategory}.zip`,
+        filename: `images.zip`,
         saveAs: true
       }, () => {
         URL.revokeObjectURL(url);
