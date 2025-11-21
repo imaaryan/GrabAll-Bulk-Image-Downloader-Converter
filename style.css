@@ -12,9 +12,9 @@
   --gray-700: #344054;
   --gray-900: #101828;
   
-  --primary-25: #F9F5FF;
-  --primary-50: #F4EBFF;
-  --primary-100: #E9D7FE;
+  --primary-25: #fff8f5;
+  --primary-50: #fff1eb;
+  --primary-100: #fee5d7;
   --primary-600: #f54900;
   --primary-700: #ca3500;
   
@@ -29,8 +29,8 @@
   --border-color: var(--gray-200);
   
   /* Effects */
-  --shadow-xs: 0px 1px 2px rgba(16, 24, 40, 0.05);
-  --shadow-sm: 0px 1px 3px rgba(16, 24, 40, 0.1), 0px 1px 2px rgba(16, 24, 40, 0.06);
+  --shadow-xs: 0px 1px 2px rgba(40, 24, 16, 0.05);
+  --shadow-sm: 0px 1px 3px rgba(40, 24, 16, 0.1), 0px 1px 2px rgba(40, 23, 16, 0.06);
   --radius-md: 8px;
   --radius-lg: 12px;
 }
